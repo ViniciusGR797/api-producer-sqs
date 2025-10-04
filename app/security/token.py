@@ -1,5 +1,5 @@
 from jose import jwt
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from utils.config import Config
 
 

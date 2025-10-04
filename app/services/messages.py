@@ -1,4 +1,3 @@
-import json
 import boto3
 from schemas.messages import MessageSchema
 from utils.config import Config
