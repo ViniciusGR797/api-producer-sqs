@@ -25,12 +25,13 @@ class MessageController:
         queue_url = Config.SQS_MAIN_QUEUE
         message_group_id = "default-group"
 
-        error = MessageService.send_to_queue(message, queue_url, message_group_id)
+        error = MessageService.send_to_queue(
+            message, queue_url, message_group_id)
         if error:
             raise HTTPException(status_code=500, detail=error)
 
         return message
-    
+
     @staticmethod
     async def get_status(queue_name: str):
         status_data, error = MessageService.get_queue_status(queue_name)
