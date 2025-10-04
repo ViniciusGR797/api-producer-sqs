@@ -11,7 +11,7 @@ class MetadataSchema(BaseModel):
         description="Número de tentativas de processamento da mensagem"
     )
     trace_id: Optional[str] = Field(
-        str(uuid4()),
+        default_factory=lambda: str(uuid4()),
         description="ID de rastreamento para logs e tracing"
     )
 
