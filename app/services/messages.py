@@ -16,7 +16,7 @@ class MessageService:
                 QueueUrl=queue_url,
                 MessageBody=message.model_dump_json(),
                 MessageGroupId=message_group_id,
-                MessageDeduplicationId=message.message_id
+                MessageDeduplicationId=str(message.message_id)
             )
             return None
         except Exception as e:
