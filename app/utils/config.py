@@ -5,7 +5,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "<random_secret_key>")
+    APP_USER_EMAIL = os.environ.get("APP_USER_EMAIL")
+    APP_USER_PASSWORD = os.environ.get("APP_USER_PASSWORD")
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(
         hours=int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", 6))
     )
