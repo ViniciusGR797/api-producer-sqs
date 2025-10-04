@@ -15,3 +15,11 @@ router = APIRouter()
 )
 async def send_transaction(data: TransactionSchema):
     return await MessageController.send(data.model_dump())
+
+
+@router.get(
+    "/status/{queue_name}",
+    dependencies=[Depends(auth_middleware)]
+)
+async def get_status(queue_name: str):
+    return await MessageController.get_status(queue_name)
