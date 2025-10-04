@@ -6,7 +6,7 @@ from schemas.transactions import TransactionSchema
 
 class MetadataSchema(BaseModel):
     retries: int = Field(0, description="Número de tentativas de processamento da mensagem")
-    trace_id: Optional[str] = Field(uuid4(), description="ID de rastreamento para logs e tracing")
+    trace_id: Optional[str] = Field(str(uuid4()), description="ID de rastreamento para logs e tracing")
 
 class MessageSchema(BaseModel):
     message_id: UUID4 = Field(..., description="Identificador único global da mensagem (UUID)")

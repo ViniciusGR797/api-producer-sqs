@@ -1,12 +1,10 @@
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import HTTPException
+from services.messages import MessageService
 from schemas.messages import MessageSchema
 from schemas.transactions import TransactionSchema
-from utils.config import Config
 from utils.validate import validate
-from security.password import compare_pwd, encrypt_pwd
-from security.token import create_token
 
 class MessageController:
     @staticmethod
@@ -17,13 +15,14 @@ class MessageController:
 
         message = MessageSchema(
             message_id=uuid4(),
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             source="transactions_api",
             type="transaction_created",
             payload=transaction
         )
 
-        # aqui você enviaria a message ao SQS
-        # sqs.send_message(...)
+        error = MessageService.send_to_queue(message)
+        if error:
+            raise HTTPException(status_code=500, detail=error)
 
         return message
