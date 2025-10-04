@@ -36,6 +36,6 @@ class TransactionSchema(BaseModel):
                 "receiver_id": "user-67890",
                 "amount": 250.75,
                 "currency": "BRL",
-                "description": "Doação para projeto X"
+                "description": "Donation to project X"
             }
         }
