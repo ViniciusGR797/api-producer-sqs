@@ -6,9 +6,10 @@ from schemas.transactions import TransactionSchema
 
 router = APIRouter()
 
+
 @router.post(
-    "/send", 
-    response_model=MessageSchema, 
+    "/send",
+    response_model=MessageSchema,
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(auth_middleware)]
 )

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Config:
     APP_USER_EMAIL = os.environ.get("APP_USER_EMAIL")
     APP_USER_PASSWORD = os.environ.get("APP_USER_PASSWORD")

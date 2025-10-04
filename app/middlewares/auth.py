@@ -1,6 +1,7 @@
 from fastapi import Request, HTTPException, status
 from security.token import is_token_valid
 
+
 async def auth_middleware(request: Request):
     auth_header = request.headers.get("Authorization")
 

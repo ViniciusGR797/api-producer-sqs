@@ -6,12 +6,13 @@ from schemas.messages import MessageSchema
 from schemas.transactions import TransactionSchema
 from utils.validate import validate
 
+
 class MessageController:
     @staticmethod
     async def send(data: dict):
         transaction, error = validate(TransactionSchema, data)
         if error:
-            raise HTTPException(status_code=422, detail=error)        
+            raise HTTPException(status_code=422, detail=error)
 
         message = MessageSchema(
             message_id=uuid4(),

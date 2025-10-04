@@ -4,17 +4,28 @@ from datetime import datetime
 from typing import Optional
 from schemas.transactions import TransactionSchema
 
+
 class MetadataSchema(BaseModel):
-    retries: int = Field(0, description="Número de tentativas de processamento da mensagem")
-    trace_id: Optional[str] = Field(str(uuid4()), description="ID de rastreamento para logs e tracing")
+    retries: int = Field(
+        0, description="Número de tentativas de processamento da mensagem")
+    trace_id: Optional[str] = Field(
+        str(uuid4()), description="ID de rastreamento para logs e tracing")
+
 
 class MessageSchema(BaseModel):
-    message_id: UUID4 = Field(..., description="Identificador único global da mensagem (UUID)")
-    timestamp: datetime = Field(..., description="Data e hora de criação da mensagem (UTC)")
-    source: str = Field(..., description="Origem da mensagem, exemplo: 'transactions_api'")
-    type: str = Field(..., description="Tipo de evento, exemplo: 'transaction_created'")
-    payload: TransactionSchema = Field(..., description="Dados principais da mensagem (transação)")
-    metadata: MetadataSchema = Field(default_factory=MetadataSchema, description="Metadados da mensagem")
+    message_id: UUID4 = Field(...,
+                              description="Identificador único global da mensagem (UUID)")
+    timestamp: datetime = Field(...,
+                                description="Data e hora de criação da mensagem (UTC)")
+    source: str = Field(...,
+                        description="Origem da mensagem, exemplo: 'transactions_api'")
+    type: str = Field(...,
+                      description="Tipo de evento, exemplo: 'transaction_created'")
+    payload: TransactionSchema = Field(...,
+                                       description="Dados principais da mensagem (transação)")
+    metadata: MetadataSchema = Field(
+        default_factory=MetadataSchema,
+        description="Metadados da mensagem")
 
     class Config:
         json_schema_extra = {

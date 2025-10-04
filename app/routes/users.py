@@ -4,6 +4,7 @@ from schemas.users import AccessTokenSchema, UserLoginSchema
 
 router = APIRouter()
 
+
 @router.post(
     "/login",
     response_model=AccessTokenSchema,

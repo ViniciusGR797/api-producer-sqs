@@ -6,3 +6,4 @@ email-validator
 bcrypt
 python-jose[cryptography]
 boto3
+autopep8
