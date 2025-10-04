@@ -80,14 +80,14 @@ jobs:
 
       # Só publica no ECR se for master
       - name: Push Docker image to ECR
-        if: github.ref == 'refs/heads/master'
+        # if: github.ref == 'refs/heads/master'
         run: |
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    if: github.ref == 'refs/heads/master'
+    # if: github.ref == 'refs/heads/master'
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
