@@ -8,7 +8,7 @@ class MessageService:
     def send_to_queue(message: MessageSchema,
                       queue_url: str = Config.SQS_MAIN_QUEUE):
         try:
-            sqs_client = boto3.client("sqs", region_name=Config.AWS_REGION)
+            sqs_client = boto3.client("sqs", region_name=Config.REGION)
             sqs_client.send_message(
                 QueueUrl=queue_url,
                 MessageBody=message.model_dump_json()

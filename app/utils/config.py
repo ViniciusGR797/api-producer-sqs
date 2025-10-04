@@ -14,5 +14,5 @@ class Config:
         hours=int(os.environ.get("JWT_ACCESS_TOKEN_EXPIRES", 6))
     )
 
-    AWS_REGION = os.environ.get("AWS_REGION")
+    REGION = os.environ.get("REGION", "us-east-1")
     SQS_MAIN_QUEUE = os.environ.get("SQS_MAIN_QUEUE")
