@@ -9,9 +9,6 @@ class MetadataSchema(BaseModel):
     trace_id: Optional[str] = Field(uuid4(), description="ID de rastreamento para logs e tracing")
 
 class MessageSchema(BaseModel):
-    """
-    Representa a mensagem completa enviada ao SQS, com controle de idempotência.
-    """
     message_id: UUID4 = Field(..., description="Identificador único global da mensagem (UUID)")
     timestamp: datetime = Field(..., description="Data e hora de criação da mensagem (UTC)")
     source: str = Field(..., description="Origem da mensagem, exemplo: 'transactions_api'")
@@ -36,7 +33,7 @@ class MessageSchema(BaseModel):
                 },
                 "metadata": {
                     "retries": 0,
-                    "trace_id": "abc123xyz456"
+                    "trace_id": "5bcb9f08-7dce-474e-aea5-7445ac1a174e"
                 }
             }
         }
