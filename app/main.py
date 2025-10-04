@@ -1,12 +1,12 @@
 import os
 from fastapi import FastAPI
 from mangum import Mangum
-from routes import users, transactions
+from routes import users, messages
 
 app = FastAPI(title="SQS API Lambda")
 
 app.include_router(users.router, prefix="/users", tags=["Users"])
-# app.include_router(transactions.router, prefix="/transactions", tags=["Transactions"])
+app.include_router(messages.router, prefix="/messages", tags=["Messages"])
 
 handler = Mangum(app)
 

@@ -4,14 +4,17 @@ from schemas.users import AccessTokenSchema, UserLoginSchema
 
 router = APIRouter()
 
-@router.post("/login", response_model=AccessTokenSchema,
-             responses={
-                 200: {"description": "Login bem-sucedido"},
-                 400: {"description": "Requisição inválida"},
-                 401: {"description": "Credenciais inválidas"},
-                 500: {"description": "Erro interno"}
-             },
-             summary="Login do usuário",
-             tags=["Users"])
+@router.post(
+    "/login",
+    response_model=AccessTokenSchema,
+    responses={
+        200: {"description": "Successful login"},
+        400: {"description": "Invalid request"},
+        401: {"description": "Invalid credentials"},
+        500: {"description": "Internal server error"}
+    },
+    summary="User login",
+    tags=["Users"]
+)
 async def login(data: UserLoginSchema):
-    return await UserController.login(data.dict())
+    return await UserController.login(data.model_dump())
