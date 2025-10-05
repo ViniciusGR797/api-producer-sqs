@@ -78,7 +78,9 @@ def custom_openapi(app: FastAPI):
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "Use the format **Bearer <token>** to authenticate requests.",
+        "description": (
+            "Use the format **Bearer <token>** to authenticate requests."
+        ),
     }
 
     app.openapi_schema = openapi_schema

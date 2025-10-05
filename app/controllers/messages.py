@@ -30,8 +30,11 @@ class MessageController:
 
         start_time = time.time()
         log_message(
-            trace_id, "send_message", "started", {
-                "queue_name": queue_name})
+            trace_id,
+            "send_message",
+            "started",
+            {"queue_name": queue_name}
+        )
 
         sqs_client, err = MessageService.get_sqs_client()
         if err:
@@ -44,7 +47,8 @@ class MessageController:
             raise HTTPException(status_code=400, detail=err)
 
         err = MessageService.send_to_queue(
-            sqs_client, message, queue_url, message_group_id)
+            sqs_client, message, queue_url, message_group_id
+        )
         if err:
             log_message(trace_id, "send_message", "error", {"error": err})
             raise HTTPException(status_code=500, detail=err)
@@ -52,8 +56,12 @@ class MessageController:
         duration = time.time() - start_time
         put_metric("MessagesSent", 1)
         put_metric("ProcessingTime", duration)
-        log_message(trace_id, "send_message", "success", {
-                    "queue_name": queue_name, "duration": duration})
+        log_message(
+            trace_id,
+            "send_message",
+            "success",
+            {"queue_name": queue_name, "duration": duration}
+        )
 
         return message
 
@@ -99,9 +107,7 @@ class MessageController:
 
         if dlq_url:
             dlq_attrs, err = MessageService.get_queue_attributes(
-                sqs_client,
-                dlq_url,
-                ["ApproximateNumberOfMessages"]
+                sqs_client, dlq_url, ["ApproximateNumberOfMessages"]
             )
             if err:
                 log_message(trace_id, action, "error", {"error": err})
@@ -111,20 +117,31 @@ class MessageController:
 
         duration = time.time() - start_time
         put_metric("ProcessingTime", duration)
-        log_message(trace_id, action, "success", {
-            "queue_name": queue_name,
-            "messages_available": attrs.get("ApproximateNumberOfMessages", 0),
-            "messages_in_flight": attrs.get("ApproximateNumberOfMessagesNotVisible", 0),
-            "messages_delayed": attrs.get("ApproximateNumberOfMessagesDelayed", 0),
-            "messages_in_dlq": messages_in_dlq,
-            "duration": duration
-        })
+        log_message(
+            trace_id,
+            action,
+            "success",
+            {
+                "queue_name": queue_name,
+                "messages_available": attrs.get(
+                    "ApproximateNumberOfMessages", 0),
+                "messages_in_flight": attrs.get(
+                    "ApproximateNumberOfMessagesNotVisible", 0),
+                "messages_delayed": attrs.get(
+                    "ApproximateNumberOfMessagesDelayed", 0),
+                "messages_in_dlq": messages_in_dlq,
+                "duration": duration
+            }
+        )
 
         return QueueStatusSchema(
             queue_name=queue_name,
-            messages_available=attrs.get("ApproximateNumberOfMessages", 0),
-            messages_in_flight=attrs.get("ApproximateNumberOfMessagesNotVisible", 0),
-            messages_delayed=attrs.get("ApproximateNumberOfMessagesDelayed", 0),
+            messages_available=attrs.get(
+                "ApproximateNumberOfMessages", 0),
+            messages_in_flight=attrs.get(
+                "ApproximateNumberOfMessagesNotVisible", 0),
+            messages_delayed=attrs.get(
+                "ApproximateNumberOfMessagesDelayed", 0),
             messages_in_dlq=messages_in_dlq
         )
 
@@ -169,14 +186,16 @@ class MessageController:
                 message_group_id = "default-group"
 
                 err = MessageService.send_to_queue(
-                    sqs_client, body, queue_url, message_group_id)
+                    sqs_client, body, queue_url, message_group_id
+                )
                 if err:
                     log_message(trace_id, action, "error", {"error": err})
                     put_metric("Errors", 1)
                     raise HTTPException(status_code=500, detail=err)
 
                 err = MessageService.delete_message(
-                    sqs_client, dlq_url, msg["ReceiptHandle"])
+                    sqs_client, dlq_url, msg["ReceiptHandle"]
+                )
                 if err:
                     log_message(trace_id, action, "error", {"error": err})
                     put_metric("Errors", 1)
@@ -187,11 +206,18 @@ class MessageController:
         duration = time.time() - start_time
         put_metric("MessagesReprocessed", total_reprocessed)
         put_metric("ProcessingTime", duration)
-        log_message(trace_id, action, "success", {
-            "queue_name": queue_name,
-            "total_reprocessed": total_reprocessed,
-            "duration": duration
-        })
+        log_message(
+            trace_id,
+            action,
+            "success",
+            {
+                "queue_name": queue_name,
+                "total_reprocessed": total_reprocessed,
+                "duration": duration
+            }
+        )
 
-        return {"message": "Reprocessing completed.",
-                "total_reprocessed": total_reprocessed}
+        return {
+            "message": "Reprocessing completed.",
+            "total_reprocessed": total_reprocessed
+        }

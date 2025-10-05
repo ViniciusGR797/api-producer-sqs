@@ -12,13 +12,17 @@ router = APIRouter()
     description=(
         "Authenticates a user with email and password. "
         "Returns a JWT access token upon successful authentication. "
-        "Use the token in the Authorization header (`Bearer <token>`) for protected endpoints."
+        "Use the token in the Authorization header (`Bearer <token>`) "
+        "for protected endpoints."
     ),
     response_model=AccessTokenSchema,
     tags=["Users"],
     responses={
         200: {"description": "Login successful. Returns an access token."},
-        422: {"model": ValidationLoginErrorResponse, "description": "Invalid request payload."},
+        422: {
+            "model": ValidationLoginErrorResponse,
+            "description": "Invalid request payload."
+        },
         500: {"model": ErrorResponse, "description": "Internal server error."},
     },
 )
