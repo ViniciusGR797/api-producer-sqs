@@ -15,4 +15,3 @@ class Config:
     )
 
     REGION = os.environ.get("REGION", "us-east-1")
-    SQS_MAIN_QUEUE = os.environ.get("SQS_MAIN_QUEUE")

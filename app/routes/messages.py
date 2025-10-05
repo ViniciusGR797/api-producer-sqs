@@ -14,7 +14,17 @@ router = APIRouter()
     dependencies=[Depends(auth_middleware)]
 )
 async def send(data: TransactionSchema):
-    return await MessageController.send(data.model_dump())
+    return await MessageController.send(data.model_dump(), "desafio-sqs.fifo")
+
+
+@router.post(
+    "/send/dlq",
+    response_model=MessageSchema,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(auth_middleware)]
+)
+async def send_dlq(data: TransactionSchema):
+    return await MessageController.send(data.model_dump(), "desafio-dlq.fifo")
 
 
 @router.get(

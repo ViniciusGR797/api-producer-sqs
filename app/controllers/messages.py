@@ -1,7 +1,6 @@
 from uuid import uuid4
 from datetime import datetime, timezone
 from fastapi import HTTPException
-from utils.config import Config
 from services.messages import MessageService
 from schemas.messages import MessageSchema, QueueStatusSchema
 from schemas.transactions import TransactionSchema
@@ -10,7 +9,7 @@ from utils.validate import validate
 
 class MessageController:
     @staticmethod
-    async def send(data: dict):
+    async def send(data: dict, queue_name: str):
         transaction, err = validate(TransactionSchema, data)
         if err:
             raise HTTPException(status_code=422, detail=err)
@@ -22,10 +21,13 @@ class MessageController:
             type="transaction_created",
             payload=transaction
         )
-        queue_url = Config.SQS_MAIN_QUEUE
         message_group_id = "default-group"
 
         sqs_client, err = MessageService.get_sqs_client()
+        if err:
+            raise HTTPException(status_code=500, detail=err)
+
+        queue_url, err = MessageService.get_queue_url(sqs_client, queue_name)
         if err:
             raise HTTPException(status_code=500, detail=err)
 
