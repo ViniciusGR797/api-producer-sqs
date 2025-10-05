@@ -94,7 +94,6 @@ class MessageService:
         receipt_handle: str
     ):
         try:
-            sqs_client = boto3.client("sqs", region_name=Config.AWS_REGION)
             sqs_client.delete_message(
                 QueueUrl=queue_url,
                 ReceiptHandle=receipt_handle
