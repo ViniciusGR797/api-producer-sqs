@@ -55,11 +55,45 @@ class MessageSchema(BaseModel):
                     "receiver_id": "user-67890",
                     "amount": 250.75,
                     "currency": "BRL",
-                    "description": "Doação para projeto X"
+                    "description": "Donation to project X"
                 },
                 "metadata": {
                     "retries": 0,
                     "trace_id": "5bcb9f08-7dce-474e-aea5-7445ac1a174e"
                 }
+            }
+        }
+
+
+class QueueStatusSchema(BaseModel):
+    queue_name: str = Field(
+        ...,
+        description="Nome da fila SQS consultada"
+    )
+    messages_available: int = Field(
+        ...,
+        description="Número aproximado de mensagens disponíveis na fila"
+    )
+    messages_in_flight: int = Field(
+        ...,
+        description="Número aproximado de mensagens em processamento na fila"
+    )
+    messages_delayed: int = Field(
+        ...,
+        description="Número aproximado de mensagens com delay na fila"
+    )
+    messages_in_dlq: int = Field(
+        ...,
+        description="Número aproximado de mensagens na fila morta associada"
+    )
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "queue_name": "main_queue",
+                "messages_available": 15,
+                "messages_in_flight": 2,
+                "messages_delayed": 0,
+                "messages_in_dlq": 3
             }
         }

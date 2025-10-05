@@ -34,7 +34,7 @@ class MessageController:
 
     @staticmethod
     async def get_status(queue_name: str):
-        # status_data, error = MessageService.get_queue_status(queue_name)
-        # if error:
-        #     raise HTTPException(status_code=500, detail=error)
-        return queue_name
+        status_data, error = MessageService.get_queue_status(queue_name)
+        if error:
+            raise HTTPException(status_code=500, detail=error)
+        return status_data

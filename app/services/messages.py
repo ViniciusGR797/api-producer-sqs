@@ -1,6 +1,6 @@
 import json
 import boto3
-from schemas.messages import MessageSchema
+from schemas.messages import MessageSchema, QueueStatusSchema
 from utils.config import Config
 
 
@@ -55,15 +55,15 @@ class MessageService:
                     messages_in_dlq = int(dlq_attrs.get(
                         "ApproximateNumberOfMessages", 0))
 
-            return {
-                "queue_name": queue_name,
-                "messages_available":
-                    int(attrs.get("ApproximateNumberOfMessages", 0)),
-                "messages_in_flight":
-                    int(attrs.get("ApproximateNumberOfMessagesNotVisible", 0)),
-                "messages_delayed":
-                    int(attrs.get("ApproximateNumberOfMessagesDelayed", 0)),
-                "messages_in_dlq": messages_in_dlq
-            }, None
+            return QueueStatusSchema(
+                queue_name=queue_name,
+                messages_available=int(
+                    attrs.get("ApproximateNumberOfMessages", 0)),
+                messages_in_flight=int(
+                    attrs.get("ApproximateNumberOfMessagesNotVisible", 0)),
+                messages_delayed=int(
+                    attrs.get("ApproximateNumberOfMessagesDelayed", 0)),
+                messages_in_dlq=messages_in_dlq
+            ), None
         except Exception as e:
             return None, f"Error getting SQS queue status: {str(e)}"
