@@ -88,7 +88,7 @@ class QueueStatusSchema(BaseModel):
     )
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "queue_name": "main_queue",
                 "messages_available": 15,
