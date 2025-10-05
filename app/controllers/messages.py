@@ -1,3 +1,4 @@
+import json
 from uuid import uuid4
 from datetime import datetime, timezone
 from fastapi import HTTPException
@@ -107,7 +108,8 @@ class MessageController:
                 break
 
             for msg in messages:
-                body = MessageSchema(**msg["Body"])
+                body_dict = json.loads(msg["Body"])
+                body = MessageSchema(**body_dict)
                 message_group_id = "default-group"
 
                 err = MessageService.send_to_queue(
