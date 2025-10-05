@@ -10,7 +10,7 @@ class MessageService:
         try:
             return boto3.client("sqs", region_name=Config.REGION), None
         except Exception as e:
-            return None, f"Error creating SQS client: {str(e)}"
+            return None, f"Error creating SQS client: {e}"
 
     @staticmethod
     def get_queue_url(sqs_client: boto3.client, queue_name: str):
@@ -18,7 +18,7 @@ class MessageService:
             response = sqs_client.get_queue_url(QueueName=queue_name)
             return response["QueueUrl"], None
         except Exception as e:
-            return None, f"Error getting queue URL for {queue_name}: {str(e)}"
+            return None, f"Error getting queue URL for {queue_name}: {e}"
 
     @staticmethod
     def get_dlq_url(sqs_client: boto3.client, queue_url: str):
@@ -40,7 +40,7 @@ class MessageService:
             dlq_url = sqs_client.get_queue_url(QueueName=dlq_name)["QueueUrl"]
             return dlq_url, None
         except Exception as e:
-            return None, f"Error getting DLQ URL: {str(e)}"
+            return None, f"Error getting DLQ URL: {e}"
 
     @staticmethod
     def get_queue_attributes(
@@ -55,8 +55,7 @@ class MessageService:
             )["Attributes"]
             return {k: int(attrs.get(k, 0)) for k in attribute_names}, None
         except Exception as e:
-            return None, f"Error getting queue attributes for {queue_url}: {
-                str(e)}"
+            return None, f"Error getting queue attributes for {queue_url}: {e}"
 
     @staticmethod
     def get_messages(sqs_client: boto3.client, queue_url: str):
@@ -68,7 +67,7 @@ class MessageService:
             )
             return response.get("Messages", []), None
         except Exception as e:
-            return None, f"Error receiving messages from {queue_url}: {str(e)}"
+            return None, f"Error receiving messages from {queue_url}: {e}"
 
     @staticmethod
     def send_to_queue(
@@ -86,7 +85,7 @@ class MessageService:
             )
             return None
         except Exception as e:
-            return f"Error sending message to SQS: {str(e)}"
+            return f"Error sending message to SQS: {e}"
 
     @staticmethod
     def delete_message(
@@ -102,4 +101,4 @@ class MessageService:
             )
             return None
         except Exception as e:
-            return f"Error deleting message from SQS: {str(e)}"
+            return f"Error deleting message from SQS: {e}"
