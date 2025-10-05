@@ -97,3 +97,17 @@ class QueueStatusSchema(BaseModel):
                 "messages_in_dlq": 3
             }
         }
+
+
+class ReprocessResponse(BaseModel):
+    message: str = "Reprocessing completed."
+    total_reprocessed: int = Field(...,
+                                   description="Total number of messages reprocessed from the DLQ.")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "message": "Reprocessing completed.",
+                "total_reprocessed": 5
+            }
+        }

@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, Path
 from utils.config import Config
 from middlewares.auth import auth_middleware
 from controllers.messages import MessageController
-from schemas.responses import ErrorResponse, QueueNotFoundErrorResponse, ReprocessResponse, ValidationMessageErrorResponse
-from schemas.messages import MessageSchema, QueueStatusSchema
+from schemas.responses import ErrorResponse, QueueNotFoundErrorResponse, ValidationMessageErrorResponse
+from schemas.messages import MessageSchema, QueueStatusSchema, ReprocessResponse
 from schemas.transactions import TransactionSchema
 
 router = APIRouter()
@@ -45,30 +45,27 @@ async def send_dlq(data: TransactionSchema):
     return await MessageController.send(data.model_dump(), Config.DLQ_NAME)
 
 
-@router.get(
-    "/status/{queue_name}",
-    summary="Get SQS queue status",
-    description="Returns the message counts for the specified SQS queue and its DLQ. "
-                "Use this endpoint to monitor queue activity and pending messages.",
-    response_model=QueueStatusSchema,
-    dependencies=[Depends(auth_middleware)],
-    responses={
-        400: {"model": QueueNotFoundErrorResponse, "description": "Invalid queue name or queue does not exist."},
-        422: {"model": ValidationMessageErrorResponse, "description": "Invalid request payload."},
-        500: {"model": ErrorResponse, "description": "Internal server error."},
-    },
-    openapi_extra={
-        "security": [{"jwt": []}]
-    },
-)
+@router.get("/status/{queue_name}",
+            summary="Get SQS queue status",
+            description="Returns the message counts for the specified SQS queue and its DLQ. "
+            "Use this endpoint to monitor queue activity and pending messages.",
+            response_model=QueueStatusSchema,
+            dependencies=[Depends(auth_middleware)],
+            responses={400: {"model": QueueNotFoundErrorResponse,
+                             "description": "Invalid queue name or queue does not exist."},
+                       422: {"model": ValidationMessageErrorResponse,
+                             "description": "Invalid request payload."},
+                       500: {"model": ErrorResponse,
+                       "description": "Internal server error."},
+                       },
+            openapi_extra={"security": [{"jwt": []}]},
+            )
 async def get_status(
     queue_name: str = Path(
         ...,
         title="Queue Name",
         description="The name of the SQS queue to reprocess messages from. Example: 'queue-sqs.fifo'",
-        example="queue-sqs.fifo"
-    )
-):
+        example="queue-sqs.fifo")):
     return await MessageController.get_status(queue_name)
 
 
@@ -93,7 +90,5 @@ async def reprocess_dlq(
         ...,
         title="Queue Name",
         description="The name of the SQS queue to reprocess messages from. Example: 'queue-sqs.fifo'",
-        example="queue-sqs.fifo"
-    )
-):
+        example="queue-sqs.fifo")):
     return await MessageController.reprocess_dlq(queue_name)
