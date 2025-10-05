@@ -1,18 +1,83 @@
 import json
 import boto3
-from schemas.messages import MessageSchema, QueueStatusSchema
+from schemas.messages import MessageSchema
 from utils.config import Config
 
 
 class MessageService:
     @staticmethod
+    def get_sqs_client():
+        try:
+            return boto3.client("sqs", region_name=Config.REGION), None
+        except Exception as e:
+            return None, f"Error creating SQS client: {str(e)}"
+
+    @staticmethod
+    def get_queue_url(sqs_client: boto3.client, queue_name: str):
+        try:
+            response = sqs_client.get_queue_url(QueueName=queue_name)
+            return response["QueueUrl"], None
+        except Exception as e:
+            return None, f"Error getting queue URL for {queue_name}: {str(e)}"
+
+    @staticmethod
+    def get_dlq_url(sqs_client: boto3.client, queue_url: str):
+        try:
+            attrs = sqs_client.get_queue_attributes(
+                QueueUrl=queue_url,
+                AttributeNames=["RedrivePolicy"]
+            )["Attributes"]
+            redrive_policy = attrs.get("RedrivePolicy")
+
+            if not redrive_policy:
+                return None, None
+
+            dlq_arn = json.loads(redrive_policy).get("deadLetterTargetArn")
+            if not dlq_arn:
+                return None, None
+
+            dlq_name = dlq_arn.split(":")[-1]
+            dlq_url = sqs_client.get_queue_url(QueueName=dlq_name)["QueueUrl"]
+            return dlq_url, None
+        except Exception as e:
+            return None, f"Error getting DLQ URL: {str(e)}"
+
+    @staticmethod
+    def get_queue_attributes(
+        sqs_client: boto3.client,
+        queue_url: str,
+        attribute_names: list[str]
+    ):
+        try:
+            attrs = sqs_client.get_queue_attributes(
+                QueueUrl=queue_url,
+                AttributeNames=attribute_names
+            )["Attributes"]
+            return {k: int(attrs.get(k, 0)) for k in attribute_names}, None
+        except Exception as e:
+            return None, f"Error getting queue attributes for {queue_url}: {
+                str(e)}"
+
+    @staticmethod
+    def get_messages(sqs_client: boto3.client, queue_url: str):
+        try:
+            response = sqs_client.receive_message(
+                QueueUrl=queue_url,
+                MaxNumberOfMessages=10,
+                WaitTimeSeconds=1
+            )
+            return response.get("Messages", [])
+        except Exception as e:
+            return None, f"Error receiving messages from {queue_url}: {str(e)}"
+
+    @staticmethod
     def send_to_queue(
+        sqs_client: boto3.client,
         message: MessageSchema,
         queue_url: str,
         message_group_id: str
     ):
         try:
-            sqs_client = boto3.client("sqs", region_name=Config.REGION)
             sqs_client.send_message(
                 QueueUrl=queue_url,
                 MessageBody=message.model_dump_json(),
@@ -24,46 +89,17 @@ class MessageService:
             return f"Error sending message to SQS: {str(e)}"
 
     @staticmethod
-    def get_queue_status(queue_name: str):
+    def delete_message(
+        sqs_client: boto3.client,
+        queue_url: str,
+        receipt_handle: str
+    ):
         try:
-            sqs_client = boto3.client("sqs", region_name=Config.REGION)
-            queue_url = sqs_client.get_queue_url(
-                QueueName=queue_name)["QueueUrl"]
-
-            attrs = sqs_client.get_queue_attributes(
+            sqs_client = boto3.client("sqs", region_name=Config.AWS_REGION)
+            sqs_client.delete_message(
                 QueueUrl=queue_url,
-                AttributeNames=[
-                    "ApproximateNumberOfMessages",
-                    "ApproximateNumberOfMessagesNotVisible",
-                    "ApproximateNumberOfMessagesDelayed",
-                    "RedrivePolicy"
-                ]
-            )["Attributes"]
-
-            messages_in_dlq = 0
-            redrive_policy = attrs.get("RedrivePolicy")
-            if redrive_policy:
-                dlq_arn = json.loads(redrive_policy).get("deadLetterTargetArn")
-                if dlq_arn:
-                    dlq_name = dlq_arn.split(":")[-1]
-                    dlq_url = sqs_client.get_queue_url(
-                        QueueName=dlq_name)["QueueUrl"]
-                    dlq_attrs = sqs_client.get_queue_attributes(
-                        QueueUrl=dlq_url,
-                        AttributeNames=["ApproximateNumberOfMessages"]
-                    )["Attributes"]
-                    messages_in_dlq = int(dlq_attrs.get(
-                        "ApproximateNumberOfMessages", 0))
-
-            return QueueStatusSchema(
-                queue_name=queue_name,
-                messages_available=int(
-                    attrs.get("ApproximateNumberOfMessages", 0)),
-                messages_in_flight=int(
-                    attrs.get("ApproximateNumberOfMessagesNotVisible", 0)),
-                messages_delayed=int(
-                    attrs.get("ApproximateNumberOfMessagesDelayed", 0)),
-                messages_in_dlq=messages_in_dlq
-            ), None
+                ReceiptHandle=receipt_handle
+            )
+            return None
         except Exception as e:
-            return None, f"Error getting SQS queue status: {str(e)}"
+            return f"Error deleting message from SQS: {str(e)}"

@@ -8,38 +8,38 @@ from schemas.transactions import TransactionSchema
 class MetadataSchema(BaseModel):
     retries: int = Field(
         0,
-        description="Número de tentativas de processamento da mensagem"
+        description="Number of attempts to process the message"
     )
     trace_id: Optional[str] = Field(
         default_factory=lambda: str(uuid4()),
-        description="ID de rastreamento para logs e tracing"
+        description="Trace ID for logs and tracing"
     )
 
 
 class MessageSchema(BaseModel):
     message_id: UUID4 = Field(
         ...,
-        description="Identificador único global da mensagem (UUID)"
+        description="Globally unique identifier for the message (UUID)"
     )
     timestamp: datetime = Field(
         ...,
-        description="Data e hora de criação da mensagem (UTC)"
+        description="UTC date and time when the message was created"
     )
     source: str = Field(
         ...,
-        description="Origem da mensagem, exemplo: 'transactions_api'"
+        description="Origin of the message, e.g., 'transactions_api'"
     )
     type: str = Field(
         ...,
-        description="Tipo de evento, exemplo: 'transaction_created'"
+        description="Event type, e.g., 'transaction_created'"
     )
     payload: TransactionSchema = Field(
         ...,
-        description="Dados principais da mensagem (transação)"
+        description="Main message data (transaction)"
     )
     metadata: MetadataSchema = Field(
         default_factory=MetadataSchema,
-        description="Metadados da mensagem"
+        description="Message metadata"
     )
 
     class Config:
@@ -68,23 +68,23 @@ class MessageSchema(BaseModel):
 class QueueStatusSchema(BaseModel):
     queue_name: str = Field(
         ...,
-        description="Nome da fila SQS consultada"
+        description="Name of the SQS queue being queried"
     )
     messages_available: int = Field(
         ...,
-        description="Número aproximado de mensagens disponíveis na fila"
+        description="Number of messages available in the queue"
     )
     messages_in_flight: int = Field(
         ...,
-        description="Número aproximado de mensagens em processamento na fila"
+        description="Number of messages being processed"
     )
     messages_delayed: int = Field(
         ...,
-        description="Número aproximado de mensagens com delay na fila"
+        description="Number of delayed messages in the queue"
     )
     messages_in_dlq: int = Field(
         ...,
-        description="Número aproximado de mensagens na fila morta associada"
+        description="Number of messages in the dead-letter queue"
     )
 
     class Config:
