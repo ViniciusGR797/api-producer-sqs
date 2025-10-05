@@ -118,7 +118,7 @@ class MessageController:
                     raise HTTPException(status_code=500, detail=err)
 
                 err = MessageService.delete_message(
-                    dlq_url, msg["ReceiptHandle"])
+                    sqs_client, dlq_url, msg["ReceiptHandle"])
                 if err:
                     raise HTTPException(status_code=500, detail=err)
 
