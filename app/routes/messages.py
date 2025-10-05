@@ -13,7 +13,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     dependencies=[Depends(auth_middleware)]
 )
-async def send_transaction(data: TransactionSchema):
+async def send(data: TransactionSchema):
     return await MessageController.send(data.model_dump())
 
 
@@ -24,3 +24,11 @@ async def send_transaction(data: TransactionSchema):
 )
 async def get_status(queue_name: str):
     return await MessageController.get_status(queue_name)
+
+
+@router.post(
+    "/reprocess/{queue_name}",
+    dependencies=[Depends(auth_middleware)]
+)
+async def reprocess_dlq(queue_name: str):
+    return await MessageController.reprocess_dlq(queue_name)

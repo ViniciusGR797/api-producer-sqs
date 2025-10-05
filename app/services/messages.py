@@ -66,7 +66,7 @@ class MessageService:
                 MaxNumberOfMessages=10,
                 WaitTimeSeconds=1
             )
-            return response.get("Messages", [])
+            return response.get("Messages", []), None
         except Exception as e:
             return None, f"Error receiving messages from {queue_url}: {str(e)}"
 

@@ -59,7 +59,7 @@ class MessageController:
             raise HTTPException(status_code=500, detail=err)
 
         messages_in_dlq = 0
-        dlq_url, err = MessageService.get_dlq_url(sqs_client, queue_name)
+        dlq_url, err = MessageService.get_dlq_url(sqs_client, queue_url)
         if err:
             raise HTTPException(status_code=500, detail=err)
         if dlq_url:
@@ -82,3 +82,40 @@ class MessageController:
                 "ApproximateNumberOfMessagesDelayed", 0),
             messages_in_dlq=messages_in_dlq
         )
+
+    @staticmethod
+    async def reprocess_dlq(queue_name: str):
+        sqs_client, err = MessageService.get_sqs_client()
+        if err:
+            raise HTTPException(status_code=500, detail=err)
+
+        queue_url, err = MessageService.get_queue_url(sqs_client, queue_name)
+        if err:
+            raise HTTPException(status_code=500, detail=err)
+
+        dlq_url, err = MessageService.get_dlq_url(sqs_client, queue_url)
+        if err:
+            raise HTTPException(status_code=500, detail=err)
+
+        while True:
+            messages, err = MessageService.get_messages(sqs_client, dlq_url)
+            if err:
+                raise HTTPException(status_code=500, detail=err)
+            if not messages:
+                break
+
+            for msg in messages:
+                body = MessageSchema(**msg["Body"])
+                message_group_id = "default-group"
+
+                err = MessageService.send_to_queue(
+                    sqs_client, body, queue_url, message_group_id)
+                if err:
+                    raise HTTPException(status_code=500, detail=err)
+
+                err = MessageService.delete_message(
+                    dlq_url, msg["ReceiptHandle"])
+                if err:
+                    raise HTTPException(status_code=500, detail=err)
+
+        return {"message": "Reprocessing completed"}
