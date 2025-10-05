@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from schemas.responses import ErrorResponse, ValidationLoginErrorResponse
 from controllers.users import UserController
 from schemas.users import AccessTokenSchema, UserLoginSchema
 
@@ -7,15 +8,19 @@ router = APIRouter()
 
 @router.post(
     "/login",
-    response_model=AccessTokenSchema,
-    responses={
-        200: {"description": "Successful login"},
-        400: {"description": "Invalid request"},
-        401: {"description": "Invalid credentials"},
-        500: {"description": "Internal server error"}
-    },
     summary="User login",
-    tags=["Users"]
+    description=(
+        "Authenticates a user with email and password. "
+        "Returns a JWT access token upon successful authentication. "
+        "Use the token in the Authorization header (`Bearer <token>`) for protected endpoints."
+    ),
+    response_model=AccessTokenSchema,
+    tags=["Users"],
+    responses={
+        200: {"description": "Login successful. Returns an access token."},
+        422: {"model": ValidationLoginErrorResponse, "description": "Invalid request payload."},
+        500: {"model": ErrorResponse, "description": "Internal server error."},
+    },
 )
 async def login(data: UserLoginSchema):
     return await UserController.login(data.model_dump())

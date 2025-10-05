@@ -30,7 +30,7 @@ class MessageController:
 
         queue_url, err = MessageService.get_queue_url(sqs_client, queue_name)
         if err:
-            raise HTTPException(status_code=500, detail=err)
+            raise HTTPException(status_code=400, detail=err)
 
         err = MessageService.send_to_queue(
             sqs_client, message, queue_url, message_group_id)
@@ -47,7 +47,7 @@ class MessageController:
 
         queue_url, err = MessageService.get_queue_url(sqs_client, queue_name)
         if err:
-            raise HTTPException(status_code=500, detail=err)
+            raise HTTPException(status_code=400, detail=err)
 
         attrs, err = MessageService.get_queue_attributes(
             sqs_client,
@@ -94,7 +94,7 @@ class MessageController:
 
         queue_url, err = MessageService.get_queue_url(sqs_client, queue_name)
         if err:
-            raise HTTPException(status_code=500, detail=err)
+            raise HTTPException(status_code=400, detail=err)
 
         dlq_url, err = MessageService.get_dlq_url(sqs_client, queue_url)
         if err:
@@ -122,4 +122,4 @@ class MessageController:
                 if err:
                     raise HTTPException(status_code=500, detail=err)
 
-        return {"message": "Reprocessing completed"}
+        return {"message": "Reprocessing completed."}

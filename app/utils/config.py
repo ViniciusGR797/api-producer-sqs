@@ -15,3 +15,6 @@ class Config:
     )
 
     REGION = os.environ.get("REGION", "us-east-1")
+
+    SQS_NAME = os.environ.get("SQS_NAME")
+    DLQ_NAME = os.environ.get("DLQ_NAME")
