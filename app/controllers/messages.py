@@ -23,6 +23,7 @@ class MessageController:
             timestamp=datetime.now(timezone.utc),
             source="transactions_api",
             type="transaction_created",
+            dlq_retry=0,
             payload=transaction
         )
         trace_id = message.message_id
@@ -182,6 +183,24 @@ class MessageController:
 
             for msg in messages:
                 body_dict = json.loads(msg["Body"])
+
+                dlq_retry = body_dict.get("dlq_retry", 0)
+
+                if dlq_retry >= 5:
+                    log_message(
+                        trace_id,
+                        action,
+                        "skipped",
+                        {
+                            "message_id": body_dict.get("message_id"),
+                            "dlq_retry": dlq_retry
+                        }
+                    )
+                    put_metric("DLQMaxRetriesReached", 1)
+                    continue
+
+                body_dict["dlq_retry"] = dlq_retry + 1
+
                 body = MessageSchema(**body_dict)
                 message_group_id = "default-group"
 

@@ -20,6 +20,10 @@ class MessageSchema(BaseModel):
         ...,
         description="Event type, e.g., 'transaction_created'"
     )
+    dlq_retry: int = Field(
+        ...,
+        description="Number of times the message has been retried from the DLQ"
+    )
     payload: TransactionSchema = Field(
         ...,
         description="Main message data (transaction)"
@@ -32,6 +36,7 @@ class MessageSchema(BaseModel):
                 "timestamp": "2025-10-04T12:00:00Z",
                 "source": "transactions_api",
                 "type": "transaction_created",
+                "dlq_retry": 0,
                 "payload": {
                     "transaction_id": "txn-908765",
                     "payer_id": "user-12345",

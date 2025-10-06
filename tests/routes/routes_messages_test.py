@@ -43,6 +43,7 @@ async def test_send_success(mock_send):
         timestamp="2025-10-05T12:00:00Z",
         source="transactions_api",
         type="transaction_created",
+        dlq_retry=0,
         payload=TransactionSchema.model_validate(transaction_data)
     )
 
