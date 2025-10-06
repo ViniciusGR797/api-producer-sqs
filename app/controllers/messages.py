@@ -191,7 +191,10 @@ class MessageController:
                         trace_id,
                         action,
                         "skipped",
-                        {"message_id": body_dict.get("message_id"), "dlq_retry": dlq_retry}
+                        {
+                            "message_id": body_dict.get("message_id"),
+                            "dlq_retry": dlq_retry
+                        }
                     )
                     put_metric("DLQMaxRetriesReached", 1)
                     continue
