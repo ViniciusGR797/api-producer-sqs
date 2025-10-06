@@ -14,6 +14,8 @@
   <img src="docs/architecture.svg" alt="API Architecture" width="600"/>
 </div>
 
+[architecture.drawio](docs/architecture.drawio)
+
 > This RESTful API enables sending and consuming messages in AWS SQS queues, providing endpoints for producing messages, checking status, and reprocessing messages in the DLQ. The architecture is based on Lambda with FastAPI + Mangum, ensuring asynchronous processing, idempotency, and observability.
 
 ---
@@ -257,7 +259,7 @@ python "app\main.py"
 
 * Access documentation via [Swagger UI](http://localhost:8080/docs)
 
-* Insomnia collection available for testing endpoints.
+* [Insomnia collection](docs/insomnia.yaml) available for testing endpoints.
 
 ---
 
