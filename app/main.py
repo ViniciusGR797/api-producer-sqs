@@ -1,9 +1,9 @@
 import os
-from fastapi import FastAPI
 from mangum import Mangum
+from utils.swagger import create_app
 from routes import users, messages
 
-app = FastAPI(title="SQS API Lambda")
+app = create_app()
 
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(messages.router, prefix="/messages", tags=["Messages"])
