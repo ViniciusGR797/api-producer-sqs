@@ -140,6 +140,7 @@ async def test_reprocess_dlq_success(mock_service, mock_metric, mock_log):
         "timestamp": "2025-10-05T12:00:00Z",
         "source": "transactions_api",
         "type": "transaction_created",
+        "dlq_retry": 0,
         "payload": {
             "transaction_id": "123",
             "payer_id": "payer_001",

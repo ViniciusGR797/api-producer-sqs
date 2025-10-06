@@ -26,7 +26,8 @@ def test_message_schema_success(valid_payload):
         "message_id": str(uuid4()),
         "timestamp": "2025-10-05T12:00:00Z",
         "source": "transactions_api",
-        "type": "transaction_created",
+        "type": "transaction_created",        
+        "dlq_retry": 0,
         "payload": valid_payload
     }
     msg = MessageSchema(**data)
@@ -39,6 +40,7 @@ def test_message_schema_invalid_uuid():
         "timestamp": "2025-10-05T12:00:00Z",
         "source": "transactions_api",
         "type": "transaction_created",
+        "dlq_retry": 0,
         "payload": {
             "transaction_id": "txn-001",
             "payer_id": "payer001",

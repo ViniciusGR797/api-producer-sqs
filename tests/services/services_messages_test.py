@@ -26,6 +26,7 @@ def message_mock():
         timestamp=datetime.now(timezone.utc),
         source="test_source",
         type="transaction_created",
+        dlq_retry=0,
         payload=payload
     )
 
