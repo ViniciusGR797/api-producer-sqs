@@ -282,3 +282,9 @@ export PYTHONPATH="app"
 ```bash
 pytest -v
 ```
+
+* Run tests checking test coverage:
+
+```bash
+pytest --cov=app tests/
+```
