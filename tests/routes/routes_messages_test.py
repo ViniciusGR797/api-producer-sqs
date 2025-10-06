@@ -43,8 +43,7 @@ async def test_send_success(mock_send):
         timestamp="2025-10-05T12:00:00Z",
         source="transactions_api",
         type="transaction_created",
-        payload=TransactionSchema.model_validate(transaction_data),
-        metadata={"trace_id": "trace-1"}
+        payload=TransactionSchema.model_validate(transaction_data)
     )
 
     response = await messages.send(TransactionSchema.model_validate(transaction_data))

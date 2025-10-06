@@ -25,7 +25,7 @@ class MessageController:
             type="transaction_created",
             payload=transaction
         )
-        trace_id = message.metadata.trace_id
+        trace_id = message.message_id
         message_group_id = "default-group"
 
         start_time = time.time()
