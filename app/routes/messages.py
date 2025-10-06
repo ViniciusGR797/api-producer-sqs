@@ -91,7 +91,7 @@ async def get_status(
             "The name of the SQS queue to get status for. "
             "Example: 'main_queue.fifo'"
         ),
-        example="main_queue.fifo"
+        examples="main_queue.fifo"
     )
 ):
     return await MessageController.get_status(queue_name)
@@ -128,7 +128,7 @@ async def reprocess_dlq(
             "The name of the SQS queue to reprocess messages from. "
             "Example: 'main_queue.fifo'"
         ),
-        example="main_queue.fifo"
+        examples="main_queue.fifo"
     )
 ):
     return await MessageController.reprocess_dlq(queue_name)

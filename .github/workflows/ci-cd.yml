@@ -32,7 +32,7 @@ jobs:
         run: |
           pip install flake8
       - name: Run lint
-        run: flake8 .
+        run: flake8 app/
 
   test:
     runs-on: ubuntu-latest

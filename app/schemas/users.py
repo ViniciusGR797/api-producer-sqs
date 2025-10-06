@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 from typing import Any
 
 
@@ -20,13 +20,14 @@ class UserLoginSchema(BaseModel):
             raise ValueError("Password must be at least 6 characters long")
         return v
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "email": "user@example.com",
                 "pwd": "strongpassword123"
             }
         }
+    )
 
 
 class AccessTokenSchema(BaseModel):
@@ -35,9 +36,10 @@ class AccessTokenSchema(BaseModel):
         description="JWT token generated after successful login"
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
             }
         }
+    )

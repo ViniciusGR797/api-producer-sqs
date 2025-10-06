@@ -1,5 +1,5 @@
 from uuid import uuid4
-from pydantic import BaseModel, Field, UUID4
+from pydantic import BaseModel, Field, UUID4, ConfigDict
 from datetime import datetime
 from typing import Optional
 from schemas.transactions import TransactionSchema
@@ -42,8 +42,8 @@ class MessageSchema(BaseModel):
         description="Message metadata"
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "message_id": "123e4567-e89b-12d3-a456-426614174000",
                 "timestamp": "2025-10-04T12:00:00Z",
@@ -63,6 +63,7 @@ class MessageSchema(BaseModel):
                 }
             }
         }
+    )
 
 
 class QueueStatusSchema(BaseModel):
@@ -87,8 +88,8 @@ class QueueStatusSchema(BaseModel):
         description="Number of messages in the dead-letter queue"
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "queue_name": "main_queue",
                 "messages_available": 15,
@@ -97,6 +98,7 @@ class QueueStatusSchema(BaseModel):
                 "messages_in_dlq": 3
             }
         }
+    )
 
 
 class ReprocessResponse(BaseModel):
@@ -106,10 +108,11 @@ class ReprocessResponse(BaseModel):
         description="Total messages reprocessed from DLQ."
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "message": "Reprocessing completed.",
                 "total_reprocessed": 5
             }
         }
+    )

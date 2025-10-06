@@ -11,89 +11,89 @@
 </div>
 
 <div align="center">
-  <img src="docs/architecture.png" alt="Arquitetura da API" width="600"/>
+  <img src="docs/architecture.svg" alt="API Architecture" width="600"/>
 </div>
 
-> Esta API RESTful tem como objetivo permitir o envio e consumo de mensagens em filas AWS SQS, oferecendo endpoints para produção, consulta de status e reprocessamento de mensagens em DLQ. A arquitetura é baseada em Lambda com FastAPI + Mangum, garantindo processamento assíncrono, idempotência e observabilidade.
+> This RESTful API enables sending and consuming messages in AWS SQS queues, providing endpoints for producing messages, checking status, and reprocessing messages in the DLQ. The architecture is based on Lambda with FastAPI + Mangum, ensuring asynchronous processing, idempotency, and observability.
 
 ---
 
-## 📝 Visão Geral / Objetivo
+## 📝 Overview / Objectives
 
-* Desenvolver um **produtor de mensagens** para SQS com endpoints RESTful.
-* Permitir **consulta de status** das filas e DLQ.
-* Implementar **reprocessamento de mensagens DLQ** com prevenção de loops e tratamento de mensagens inválidas.
-* Garantir **idempotência**, **logs detalhados**, métricas básicas e containerização via Docker.
-* Fornecer documentação **OpenAPI/Swagger** completa.
-
----
-
-## 🏛 Arquitetura
-
-A solução segue a arquitetura serverless e distribuída:
-
-* **API Gateway** → expõe endpoints da API.
-* **Lambda Producer** → envia mensagens para fila SQS FIFO.
-* **SQS FIFO Queue** → fila principal, com **DLQ** configurada.
-* **Lambda Consumer Worker** → processa mensagens de forma assíncrona.
-* **DynamoDB** → gerencia metadados das mensagens e garante idempotência.
-* **CloudWatch** → logs e métricas.
+* Develop a **message producer** for SQS with RESTful endpoints.
+* Enable **status checking** of main queues and DLQ.
+* Implement **DLQ message reprocessing** with loop prevention and invalid message handling.
+* Ensure **idempotency**, **detailed logging**, basic metrics, and Docker containerization.
+* Provide **OpenAPI/Swagger** documentation.
 
 ---
 
-## ⚖ Decisão de Consumo: Lambda vs ECS
+## 🏛 Architecture
 
-| Critério                  | Lambda (Escolhido)   | ECS Fargate (Alternativa) |
-| ------------------------- | -------------------- | ------------------------- |
-| Complexidade de setup     | Baixa                | Média/Alta                |
-| Escalabilidade            | Automática           | Manual / Configurável     |
-| Custos                    | Pay-per-use          | Contêiner sempre ativo    |
-| Latência de processamento | Imediata             | Variável                  |
-| Retentativas / DLQ        | Configurável via SQS | Manual/Programada         |
-| Observabilidade           | Integrada CloudWatch | Integrar manualmente      |
+The solution follows a serverless and distributed architecture:
 
-> **Justificativa:** Lambda oferece escalabilidade automática, fácil integração com SQS e menor custo operacional para este caso de uso.
+* **API Gateway** → exposes API endpoints.
+* **Lambda Producer** → sends messages to the SQS FIFO queue.
+* **SQS FIFO Queue** → main queue, with a configured **DLQ**.
+* **Lambda Consumer Worker** → asynchronously processes messages.
+* **DynamoDB** → manages message metadata and guarantees idempotency.
+* **CloudWatch** → logs and metrics.
 
 ---
 
-## 📂 Estrutura de Pastas / Padrões
+## ⚖ Consumption Decision: Lambda vs ECS
+
+| Criteria           | Lambda (Chosen)       | ECS Fargate (Alternative) |
+| ------------------ | --------------------- | ------------------------- |
+| Setup Complexity   | Low                   | Medium/High               |
+| Scalability        | Automatic             | Manual / Configurable     |
+| Cost               | Pay-per-use           | Always running container  |
+| Processing Latency | Immediate             | Variable                  |
+| Retries / DLQ      | Configurable via SQS  | Manual / Scheduled        |
+| Observability      | Integrated CloudWatch | Manual integration        |
+
+> **Rationale:** Lambda provides automatic scaling, easy SQS integration, and lower operational costs for this use case.
+
+---
+
+## 📂 Folder Structure / Patterns
 
 ```
 ├── .github/
 │   └── workflows/
-│       └── ci-cd.yml                # Pipelines de CI/CD
+│       └── ci-cd.yml                # CI/CD pipelines
 ├── app/
 │   ├── controllers/
-│   │   ├── messages.py              # Lógica de controllers para mensagens
-│   │   └── users.py                 # Lógica de controllers para usuários
+│   │   ├── messages.py              # Message controllers logic
+│   │   └── users.py                 # User controllers logic
 │   ├── middlewares/
-│   │   └── auth.py                  # Autenticação e validação de tokens
+│   │   └── auth.py                  # Authentication and token validation
 │   ├── routes/
-│   │   ├── messages.py              # Definição de rotas para mensagens
-│   │   └── users.py                 # Definição de rotas para usuários
+│   │   ├── messages.py              # Message route definitions
+│   │   └── users.py                 # User route definitions
 │   ├── schemas/
-│   │   ├── messages.py              # Schemas Pydantic de mensagens
-│   │   ├── responses.py             # Schemas de respostas gerais
-│   │   ├── transactions.py          # Schemas de transações
-│   │   └── users.py                 # Schemas de usuários
+│   │   ├── messages.py              # Pydantic schemas for messages
+│   │   ├── responses.py             # General response schemas
+│   │   ├── transactions.py          # Transaction schemas
+│   │   └── users.py                 # User schemas
 │   ├── security/
-│   │   └── token.py                 # Geração e validação de tokens JWT
+│   │   └── token.py                 # JWT token generation and validation
 │   ├── services/
-│   │   └── messages.py              # Lógica de integração com SQS
+│   │   └── messages.py              # SQS integration logic
 │   └── utils/
-│       ├── config.py                # Configurações de ambiente
-│       ├── logging.py               # Configuração de logs
-│       ├── metrics.py               # Métricas customizadas
-│       ├── swagger.py               # Configuração do Swagger/OpenAPI
-│       └── validate.py              # Funções utilitárias de validação
-│   └── main.py                      # Entrypoint FastAPI + Mangum
-├── tests/                           # Testes unitários
-├── .env.sample                      # Exemplo de variáveis de ambiente
-├── .gitignore                       # Arquivos e pastas ignoradas no Git
-├── Dockerfile                       # Dockerfile para containerização
+│       ├── config.py                # Environment configuration
+│       ├── logging.py               # Logging configuration
+│       ├── metrics.py               # Custom metrics
+│       ├── swagger.py               # Swagger/OpenAPI setup
+│       └── validate.py              # Utility validation functions
+│   └── main.py                      # FastAPI + Mangum entrypoint
+├── tests/                           # Unit tests
+├── .env.sample                      # Sample environment variables
+├── .gitignore                       # Git ignored files/folders
+├── Dockerfile                       # Dockerfile for containerization
 ├── README.md
-├── requirements.txt                 # Dependências do projeto
-└── requirements_test.txt            # Dependências para testes
+├── requirements.txt                 # Project dependencies
+└── requirements_test.txt            # Test dependencies
 
 ```
 
@@ -101,62 +101,61 @@ A solução segue a arquitetura serverless e distribuída:
 
 ## 🔌 Endpoints (OpenAPI)
 
-* **POST /messages/send** – Envia mensagem para fila SQS.
-* **GET /messages/status** – Consulta status da fila principal e DLQ.
-* **POST /messages/dlq/reprocess** – Reprocessa mensagens da DLQ para a fila principal.
-* **POST /users/login** – Gera token de autenticação.
+* **POST /messages/send** – Sends a message to the SQS queue.
+* **GET /messages/status** – Checks the status of the main queue and DLQ.
+* **POST /messages/dlq/reprocess** – Reprocesses messages from DLQ to the main queue.
+* **POST /users/login** – Generates authentication token.
 
-Acesse a documentação interativa: [Swagger UI Localmente](http://localhost:8000/docs)
-ou [Swagger UI AWS](https://fqgn7lclxb.execute-api.us-east-1.amazonaws.com/docs)
-
----
-
-## 🔄 Fluxo de Processamento de Mensagens
-
-1. Produção via POST `/messages/send`.
-2. Mensagem salva em **DynamoDB** para rastreio e idempotência.
-3. Lambda Worker consome mensagens da fila principal.
-4. Processamento assíncrono e logging via CloudWatch.
-5. Mensagens inválidas ou que excedem retentativas → DLQ.
+Interactive documentation: [Local Swagger UI](http://localhost:8000/docs) or [AWS Swagger UI](https://fqgn7lclxb.execute-api.us-east-1.amazonaws.com/docs)
 
 ---
 
-## ⚠ Tratamento de Erros, Retentativas e DLQ
+## 🔄 Message Processing Flow
 
-* Configuração de **SQS FIFO + DLQ FIFO**.
-* Mensagens inválidas movidas para DLQ.
-* Retentativas automáticas configuradas via SQS (maxReceiveCount).
-* Prevenção de loops na reprocessamento da DLQ.
-
----
-
-## ✅ Idempotência
-
-Implementada **em dois níveis**:
-
-- **DynamoDB**: cada mensagem possui uma chave única que garante que mensagens duplicadas não sejam processadas novamente.
-- **SQS FIFO + DLQ FIFO**: utiliza o atributo `MessageDeduplicationId` para prevenir duplicações na fila, mesmo em casos de reenvio ou falhas temporárias.
-
-Essa combinação assegura que o processamento de mensagens seja **idempotente**, evitando que mensagens duplicadas gerem efeitos colaterais indesejados e garantindo a integridade tanto do fluxo de mensagens quanto do reprocessamento da DLQ.
+1. Produced via POST `/messages/send`.
+2. Message saved in **DynamoDB** for traceability and idempotency.
+3. Lambda Worker consumes messages from the main queue.
+4. Asynchronous processing and logging via CloudWatch.
+5. Invalid messages or those exceeding retries → sent to DLQ.
 
 ---
 
-## 📊 Observabilidade
+## ⚠ Error Handling, Retries, and DLQ
 
-A API possui um sistema de **logs estruturados** e **métricas customizadas**, permitindo monitoramento detalhado das operações.
+* Configured **SQS FIFO + DLQ FIFO**.
+* Invalid messages moved to DLQ.
+* Automatic retries via SQS (`maxReceiveCount`).
+* Loop prevention during DLQ reprocessing.
 
-### Logs Detalhados
+---
 
-* Todos os eventos importantes são registrados via `logger` do Python.
-* Os logs são estruturados em **JSON** com os seguintes campos:
+## ✅ Idempotency
 
-  * `trace_id`: identificador único da operação, útil para rastrear o fluxo.
-  * `action`: operação realizada (ex: `send_message`, `get_status`, `reprocess_dlq`, `user_login`).
-  * `status`: estado da operação (`started`, `success`, `error`).
-  * `details`: informações adicionais, como nome da fila, duração ou erro.
-  * `timestamp`: horário UTC da execução.
+Implemented **on two levels**:
 
-**Exemplo de log:**
+* **DynamoDB**: each message has a unique key to ensure duplicates are not processed again.
+* **SQS FIFO + DLQ FIFO**: uses `MessageDeduplicationId` to prevent duplicates in the queue, even during retries or temporary failures.
+
+This ensures **idempotent** message processing, avoiding side effects from duplicate messages and guaranteeing DLQ reprocessing integrity.
+
+---
+
+## 📊 Observability
+
+The API provides **structured logging** and **custom metrics** for detailed monitoring.
+
+### Detailed Logs
+
+* All important events logged using Python `logger`.
+* Logs structured in **JSON** with the following fields:
+
+  * `trace_id`: unique operation identifier for tracking.
+  * `action`: performed action (e.g., `send_message`, `get_status`, `reprocess_dlq`, `user_login`).
+  * `status`: operation status (`started`, `success`, `error`).
+  * `details`: additional information like queue name, duration, or error.
+  * `timestamp`: UTC execution time.
+
+**Example log:**
 
 ```json
 {
@@ -168,47 +167,46 @@ A API possui um sistema de **logs estruturados** e **métricas customizadas**, p
 }
 ```
 
-### Métricas Customizadas
+### Custom Metrics
 
-As métricas são enviadas para **AWS CloudWatch**, usando o namespace `API-Producer-SQS/Messages`.
+Metrics are sent to **AWS CloudWatch** under the namespace `API-Producer-SQS/Messages`.
 
-Principais métricas disponíveis:
+Main metrics:
 
-| Métrica               | Descrição                                                   |
-| --------------------- | ----------------------------------------------------------- |
-| `MessagesSent`        | Contagem de mensagens enviadas com sucesso para a fila SQS  |
-| `MessagesReprocessed` | Quantidade de mensagens reprocessadas da DLQ                |
-| `ProcessingTime`      | Tempo médio de processamento de cada operação (em segundos) |
-| `Errors`              | Contagem de erros ocorridos durante operações               |
-| `FailedLogins`        | Tentativas de login inválidas                               |
-| `SuccessfulLogins`    | Logins autenticados com sucesso                             |
+| Metric                | Description                                     |
+| --------------------- | ----------------------------------------------- |
+| `MessagesSent`        | Count of messages successfully sent to SQS      |
+| `MessagesReprocessed` | Number of messages reprocessed from DLQ         |
+| `ProcessingTime`      | Average processing time per operation (seconds) |
+| `Errors`              | Count of errors during operations               |
+| `FailedLogins`        | Invalid login attempts                          |
+| `SuccessfulLogins`    | Successful authenticated logins                 |
 
-
-> Essa abordagem garante visibilidade completa do fluxo de mensagens, incluindo produção, consumo assíncrono via Lambda e reprocessamento da DLQ, facilitando detecção de falhas e análise de desempenho.
-
----
-
-## 🔒 Segurança
-
-* Endpoint `/users/login` gera **token JWT**.
-* Token necessário em headers `Authorization` para outros endpoints.
+> This provides full visibility of the message flow, including production, asynchronous consumption via Lambda, and DLQ reprocessing, helping detect failures and monitor performance.
 
 ---
 
-## 🏡 Como Executar Localmente
+## 🔒 Security
 
-**Pré-requisitos:** Python 3.11, credenciais de acesso à AWS com os recursos já criados.
+* `/users/login` endpoint generates **JWT token**.
+* Token required in `Authorization` headers for other endpoints.
 
-### Passo a passo
+---
 
-* Clone o repositório:
+## 🏡 Running Locally
+
+**Requirements:** Python 3.11, AWS credentials with pre-created resources.
+
+### Steps
+
+* Clone the repository:
 
 ```bash
 git clone https://github.com/ViniciusGR797/producer-sqs-api.git
 cd producer-sqs-api
 ```
 
-* Crie e ative um ambiente virtual Python (`venv`):
+* Create and activate Python virtual environment (`venv`):
 
 ```bash
 python -m venv venv
@@ -222,13 +220,13 @@ source venv/bin/activate
 venv\Scripts\activate
 ```
 
-* Instale as dependências do projeto:
+* Install project dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-* Crie um arquivo `.env` a partir de `.env.sample`:
+* Create `.env` file from `.env.sample`:
 
 ```bash
 APP_USER_EMAIL=user@example.com
@@ -240,41 +238,48 @@ SQS_NAME=main_queue.fifo
 DLQ_NAME=dlq_queue.fifo
 ```
 
-* Configure as variáveis de ambiente definindo suas credenciais AWS e outras variáveis:
+* Set environment variables for AWS credentials and other configs:
 
 ```bash
 export ENV=LOCAL
-export AWS_ACCESS_KEY_ID="sua_access_key_id"
-export AWS_SECRET_ACCESS_KEY="sua_secret_access_key"
-export AWS_DEFAULT_REGION="sua_regiao"
+export AWS_ACCESS_KEY_ID="your_access_key_id"
+export AWS_SECRET_ACCESS_KEY="your_secret_access_key"
+export AWS_DEFAULT_REGION="your_region"
 ```
 
-> Essas variáveis permitem que a aplicação acesse os recursos AWS já existentes na sua conta.
+> These variables allow the application to access existing AWS resources in your account.
 
-* Executar a API:
+* Run the API:
+
 ```bash
 python "app\main.py"
 ```
 
-* Acessar a documentação via [Swagger UI](http://localhost:8080/docs)
+* Access documentation via [Swagger UI](http://localhost:8080/docs)
 
-* Collection do [Insomnia](http://localhost:8080/docs) para consumir os endpoints.
+* Insomnia collection available for testing endpoints.
 
 ---
 
-## 🧪 Testes
+## 🧪 Tests
 
-Todos os testes estão localizados na pasta `tests/` e pressupõem que você já tenha seguido os passos para **executar localmente** (ambiente virtual ativado, dependências instaladas e variáveis de ambiente configuradas).
+All tests are in `tests/` and assume you have followed the **local setup** steps (activated virtual environment, installed dependencies, and configured environment variables).
 
-Para rodar os testes sigas os passos:
+To run tests:
 
-* Instale as dependências de teste adicionais:
+* Install additional test dependencies:
 
 ```bash
 pip install -r requirements_test.txt
 ```
 
-* Execute os testes unitários com `pytest`:
+* Set environment variables:
+
+```bash
+export PYTHONPATH="app"
+```
+
+* Run unit tests with `pytest`:
 
 ```bash
 pytest -v

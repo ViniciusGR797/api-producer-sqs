@@ -13,5 +13,5 @@ def is_token_valid(token: str) -> bool:
     try:
         jwt.decode(token, Config.JWT_SECRET_KEY, algorithms=["HS256"])
         return True
-    except jwt.PyJWTError:
+    except Exception:
         return False

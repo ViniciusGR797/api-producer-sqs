@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, PositiveFloat
+from pydantic import BaseModel, ConfigDict, Field, PositiveFloat
 from typing import Optional
 
 
@@ -28,8 +28,8 @@ class TransactionSchema(BaseModel):
         description="Optional description of the transaction"
     )
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "transaction_id": "txn-908765",
                 "payer_id": "user-12345",
@@ -39,3 +39,4 @@ class TransactionSchema(BaseModel):
                 "description": "Donation to project X"
             }
         }
+    )
