@@ -1,5 +1,3 @@
-import pytest
-from pydantic import ValidationError
 from utils.validate import validate
 from schemas.transactions import TransactionSchema
 

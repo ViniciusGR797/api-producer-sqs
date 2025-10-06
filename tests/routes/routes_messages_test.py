@@ -12,17 +12,20 @@ app = FastAPI()
 app.include_router(messages.router)
 client = TestClient(app)
 
+
 @pytest.fixture(autouse=True)
 def mock_boto3_client():
     with patch.object(boto3, "client") as mock_client:
         mock_sqs = MagicMock()
-        mock_sqs.get_queue_url.return_value = {"QueueUrl": "https://fake-queue-url"}
+        mock_sqs.get_queue_url.return_value = {
+            "QueueUrl": "https://fake-queue-url"}
         mock_sqs.send_message.return_value = {"MessageId": str(uuid4())}
         mock_sqs.receive_message.return_value = {"Messages": []}
         mock_sqs.delete_message.return_value = {}
         mock_sqs.purge_queue.return_value = {}
         mock_client.return_value = mock_sqs
         yield mock_client
+
 
 @pytest.mark.asyncio
 @patch("routes.messages.MessageController.send", new_callable=AsyncMock)
@@ -41,12 +44,13 @@ async def test_send_success(mock_send):
         source="transactions_api",
         type="transaction_created",
         payload=TransactionSchema.model_validate(transaction_data),
-        metadata={"retries": 0, "trace_id": "trace-1"}
+        metadata={"trace_id": "trace-1"}
     )
 
     response = await messages.send(TransactionSchema.model_validate(transaction_data))
     assert isinstance(response, MessageSchema)
     assert response.payload.transaction_id == "txn-123"
+
 
 @pytest.mark.asyncio
 @patch("routes.messages.MessageController.send", new_callable=AsyncMock)
@@ -63,6 +67,7 @@ async def test_send_failure(mock_send):
     with pytest.raises(Exception):
         await messages.send(TransactionSchema.model_validate(transaction_data))
 
+
 @pytest.mark.asyncio
 @patch("routes.messages.MessageController.get_status", new_callable=AsyncMock)
 async def test_get_status_success(mock_status):
@@ -76,6 +81,7 @@ async def test_get_status_success(mock_status):
     response = await messages.get_status("main_queue")
     assert response.messages_available == 10
     assert response.messages_in_dlq == 3
+
 
 @pytest.mark.asyncio
 @patch("routes.messages.MessageController.reprocess_dlq", new_callable=AsyncMock)

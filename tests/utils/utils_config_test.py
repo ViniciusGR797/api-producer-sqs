@@ -12,11 +12,13 @@ def clear_config_module(monkeypatch):
     monkeypatch.delenv("SQS_NAME", raising=False)
     monkeypatch.delenv("DLQ_NAME", raising=False)
 
+
 def make_config():
     from utils import config
     import importlib
     importlib.reload(config)
     return config.Config
+
 
 def test_config_defaults(monkeypatch):
     cfg = make_config()
@@ -27,6 +29,7 @@ def test_config_defaults(monkeypatch):
     assert cfg.REGION == "us-east-1"
     assert cfg.SQS_NAME == "main_queue.fifo"
     assert cfg.DLQ_NAME == "dlq_queue.fifo"
+
 
 def test_config_env_variables(monkeypatch):
     monkeypatch.setenv("APP_USER_EMAIL", "env_user@test.com")
@@ -45,6 +48,7 @@ def test_config_env_variables(monkeypatch):
     assert cfg.REGION == "us-west-2"
     assert cfg.SQS_NAME == "env_queue.fifo"
     assert cfg.DLQ_NAME == "env_dlq.fifo"
+
 
 def test_config_partial_env(monkeypatch):
     monkeypatch.setenv("APP_USER_EMAIL", "partial@test.com")

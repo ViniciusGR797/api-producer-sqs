@@ -2,7 +2,7 @@ import pytest
 from uuid import uuid4
 from pydantic import ValidationError
 from schemas.messages import MessageSchema, QueueStatusSchema, ReprocessResponse
-from schemas.transactions import TransactionSchema
+
 
 @pytest.mark.parametrize("valid_payload", [
     {
@@ -28,10 +28,11 @@ def test_message_schema_success(valid_payload):
         "source": "transactions_api",
         "type": "transaction_created",
         "payload": valid_payload,
-        "metadata": {"retries": 0, "trace_id": str(uuid4())}
+        "metadata": {"trace_id": str(uuid4())}
     }
     msg = MessageSchema(**data)
     assert msg.payload.transaction_id == valid_payload["transaction_id"]
+
 
 def test_message_schema_invalid_uuid():
     data = {
@@ -50,6 +51,7 @@ def test_message_schema_invalid_uuid():
     with pytest.raises(ValidationError):
         MessageSchema(**data)
 
+
 def test_message_schema_default_metadata():
     data = {
         "message_id": str(uuid4()),
@@ -65,8 +67,8 @@ def test_message_schema_default_metadata():
         }
     }
     msg = MessageSchema(**data)
-    assert msg.metadata.retries == 0
     assert msg.metadata.trace_id is not None
+
 
 def test_queue_status_schema_success():
     data = {
@@ -79,6 +81,7 @@ def test_queue_status_schema_success():
     status = QueueStatusSchema(**data)
     assert status.messages_available == 10
 
+
 def test_queue_status_schema_invalid_values():
     data = {
         "queue_name": "main_queue",
@@ -89,9 +92,11 @@ def test_queue_status_schema_invalid_values():
     with pytest.raises(ValidationError):
         QueueStatusSchema(**data)
 
+
 def test_reprocess_response_success():
     resp = ReprocessResponse(total_reprocessed=5)
     assert resp.total_reprocessed == 5
+
 
 def test_reprocess_response_missing_total():
     with pytest.raises(ValidationError):
