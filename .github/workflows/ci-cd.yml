@@ -82,7 +82,6 @@ jobs:
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # Só publica no ECR se for master
       - name: Push Docker image to ECR
         if: github.ref == 'refs/heads/master'
         run: |

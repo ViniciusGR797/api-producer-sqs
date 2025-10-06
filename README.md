@@ -65,6 +65,7 @@ The solution follows a serverless and distributed architecture:
 │   └── workflows/
 │       └── ci-cd.yml                # CI/CD pipelines
 ├── app/
+│   ├── main.py                      # FastAPI + Mangum entrypoint
 │   ├── controllers/
 │   │   ├── messages.py              # Message controllers logic
 │   │   └── users.py                 # User controllers logic
@@ -88,7 +89,6 @@ The solution follows a serverless and distributed architecture:
 │       ├── metrics.py               # Custom metrics
 │       ├── swagger.py               # Swagger/OpenAPI setup
 │       └── validate.py              # Utility validation functions
-│   └── main.py                      # FastAPI + Mangum entrypoint
 ├── tests/                           # Unit tests
 ├── .env.sample                      # Sample environment variables
 ├── .gitignore                       # Git ignored files/folders
@@ -204,8 +204,8 @@ Main metrics:
 * Clone the repository:
 
 ```bash
-git clone https://github.com/ViniciusGR797/producer-sqs-api.git
-cd producer-sqs-api
+git clone https://github.com/ViniciusGR797/api-producer-sqs.git
+cd api-producer-sqs
 ```
 
 * Create and activate Python virtual environment (`venv`):
@@ -281,4 +281,10 @@ export PYTHONPATH="app"
 
 ```bash
 pytest -v
+```
+
+* Run tests checking test coverage:
+
+```bash
+pytest --cov=app tests/
 ```
