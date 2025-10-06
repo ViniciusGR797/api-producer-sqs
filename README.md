@@ -204,8 +204,8 @@ Main metrics:
 * Clone the repository:
 
 ```bash
-git clone https://github.com/ViniciusGR797/producer-sqs-api.git
-cd producer-sqs-api
+git clone https://github.com/ViniciusGR797/api-producer-sqs.git
+cd api-producer-sqs
 ```
 
 * Create and activate Python virtual environment (`venv`):
