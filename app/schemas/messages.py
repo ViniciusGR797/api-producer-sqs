@@ -1,7 +1,5 @@
-from uuid import uuid4
 from pydantic import BaseModel, Field, UUID4, ConfigDict
 from datetime import datetime
-from typing import Optional
 from schemas.transactions import TransactionSchema
 
 
