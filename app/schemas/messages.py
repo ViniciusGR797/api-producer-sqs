@@ -6,10 +6,6 @@ from schemas.transactions import TransactionSchema
 
 
 class MetadataSchema(BaseModel):
-    retries: int = Field(
-        0,
-        description="Number of attempts to process the message"
-    )
     trace_id: Optional[str] = Field(
         default_factory=lambda: str(uuid4()),
         description="Trace ID for logs and tracing"
@@ -58,7 +54,6 @@ class MessageSchema(BaseModel):
                     "description": "Donation to project X"
                 },
                 "metadata": {
-                    "retries": 0,
                     "trace_id": "5bcb9f08-7dce-474e-aea5-7445ac1a174e"
                 }
             }

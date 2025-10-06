@@ -1,17 +1,22 @@
 import json
 import pytest
 from uuid import uuid4
-from unittest.mock import patch, AsyncMock
+from unittest.mock import patch
 from fastapi import HTTPException
 from controllers.messages import MessageController
 from schemas.messages import MessageSchema, QueueStatusSchema
+
 
 @pytest.mark.asyncio
 @patch("controllers.messages.log_message")
 @patch("controllers.messages.put_metric")
 @patch("controllers.messages.MessageService")
 @patch("controllers.messages.validate")
-async def test_send_success(mock_validate, mock_service, mock_metric, mock_log):
+async def test_send_success(
+        mock_validate,
+        mock_service,
+        mock_metric,
+        mock_log):
     data = {
         "transaction_id": "123",
         "payer_id": "payer_001",
@@ -30,6 +35,7 @@ async def test_send_success(mock_validate, mock_service, mock_metric, mock_log):
 
     assert isinstance(message, MessageSchema)
     mock_metric.assert_any_call("MessagesSent", 1)
+
 
 @pytest.mark.asyncio
 @patch("controllers.messages.log_message")
@@ -51,7 +57,11 @@ async def test_send_validation_error(mock_validate, mock_metric, mock_log):
 @patch("controllers.messages.put_metric")
 @patch("controllers.messages.MessageService")
 @patch("controllers.messages.validate")
-async def test_send_sqs_client_error(mock_validate, mock_service, mock_metric, mock_log):
+async def test_send_sqs_client_error(
+        mock_validate,
+        mock_service,
+        mock_metric,
+        mock_log):
     data = {
         "transaction_id": "123",
         "payer_id": "payer_001",
@@ -137,7 +147,7 @@ async def test_reprocess_dlq_success(mock_service, mock_metric, mock_log):
             "amount": 100,
             "currency": "USD"
         },
-        "metadata": {"retries": 0, "trace_id": "trace-1"}
+        "metadata": {"trace_id": "trace-1"}
     }
 
     mock_service.get_sqs_client.return_value = (mock_client, None)

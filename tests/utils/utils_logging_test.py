@@ -1,9 +1,9 @@
-import pytest
 from unittest.mock import patch
 from utils.logging import log_message
-from datetime import datetime, timezone
+from datetime import datetime
 import json
 import uuid
+
 
 def test_log_message_success():
     trace_id = uuid.uuid4()
@@ -22,6 +22,7 @@ def test_log_message_success():
         assert log_data["details"] == details
         datetime.fromisoformat(log_data["timestamp"].replace("Z", "+00:00"))
 
+
 def test_log_message_no_details():
     trace_id = uuid.uuid4()
     action = "transaction_created"
@@ -33,6 +34,7 @@ def test_log_message_no_details():
         log_arg = mock_info.call_args[0][0]
         log_data = json.loads(log_arg)
         assert log_data["details"] is None
+
 
 def test_log_message_invalid_trace_id():
     trace_id = 12345
