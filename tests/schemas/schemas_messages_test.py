@@ -27,8 +27,7 @@ def test_message_schema_success(valid_payload):
         "timestamp": "2025-10-05T12:00:00Z",
         "source": "transactions_api",
         "type": "transaction_created",
-        "payload": valid_payload,
-        "metadata": {"trace_id": str(uuid4())}
+        "payload": valid_payload
     }
     msg = MessageSchema(**data)
     assert msg.payload.transaction_id == valid_payload["transaction_id"]
@@ -50,24 +49,6 @@ def test_message_schema_invalid_uuid():
     }
     with pytest.raises(ValidationError):
         MessageSchema(**data)
-
-
-def test_message_schema_default_metadata():
-    data = {
-        "message_id": str(uuid4()),
-        "timestamp": "2025-10-05T12:00:00Z",
-        "source": "transactions_api",
-        "type": "transaction_created",
-        "payload": {
-            "transaction_id": "txn-003",
-            "payer_id": "payer003",
-            "receiver_id": "receiver003",
-            "amount": 50,
-            "currency": "EUR"
-        }
-    }
-    msg = MessageSchema(**data)
-    assert msg.metadata.trace_id is not None
 
 
 def test_queue_status_schema_success():

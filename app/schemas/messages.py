@@ -5,13 +5,6 @@ from typing import Optional
 from schemas.transactions import TransactionSchema
 
 
-class MetadataSchema(BaseModel):
-    trace_id: Optional[str] = Field(
-        default_factory=lambda: str(uuid4()),
-        description="Trace ID for logs and tracing"
-    )
-
-
 class MessageSchema(BaseModel):
     message_id: UUID4 = Field(
         ...,
@@ -33,10 +26,6 @@ class MessageSchema(BaseModel):
         ...,
         description="Main message data (transaction)"
     )
-    metadata: MetadataSchema = Field(
-        default_factory=MetadataSchema,
-        description="Message metadata"
-    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -52,9 +41,6 @@ class MessageSchema(BaseModel):
                     "amount": 250.75,
                     "currency": "BRL",
                     "description": "Donation to project X"
-                },
-                "metadata": {
-                    "trace_id": "5bcb9f08-7dce-474e-aea5-7445ac1a174e"
                 }
             }
         }

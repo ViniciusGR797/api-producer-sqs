@@ -146,8 +146,7 @@ async def test_reprocess_dlq_success(mock_service, mock_metric, mock_log):
             "receiver_id": "receiver_001",
             "amount": 100,
             "currency": "USD"
-        },
-        "metadata": {"trace_id": "trace-1"}
+        }
     }
 
     mock_service.get_sqs_client.return_value = (mock_client, None)

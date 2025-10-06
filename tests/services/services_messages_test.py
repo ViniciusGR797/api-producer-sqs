@@ -1,7 +1,7 @@
 import json
 import pytest
 from unittest.mock import Mock
-from schemas.messages import MessageSchema, MetadataSchema, TransactionSchema
+from schemas.messages import MessageSchema, TransactionSchema
 from services.messages import MessageService
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -26,8 +26,7 @@ def message_mock():
         timestamp=datetime.now(timezone.utc),
         source="test_source",
         type="transaction_created",
-        payload=payload,
-        metadata=MetadataSchema(race_id=str(uuid4()))
+        payload=payload
     )
 
 
